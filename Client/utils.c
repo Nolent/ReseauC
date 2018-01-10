@@ -32,3 +32,41 @@ void viderBuffer()
         c = getchar();
     }
 }
+void entrerPlaque(char immat[8])
+{
+    do
+    {
+        printf("Entrez votre plaque d'immatriculation\n Exemple : AA135BC\n");
+        viderBuffer();
+        fgets(immat, 8, stdin);
+    } while (isImmat(immat) < 0);
+}
+
+char entrerCat(){
+    char cat;
+    do
+    {
+        char tmp[2];
+        printf("Entrez la catégorie du véhicule (lettre minuscule)\n");
+        viderBuffer();
+        fgets(tmp, 2, stdin);
+        cat = tmp[0];
+        printf("cat = %c\n",cat);
+    } while (cat > 122 || cat < 97);
+    return cat;
+}
+
+int entrerDuree(){
+    char *n = NULL;
+    int duree;
+    do
+    {
+        char tmp[3];
+        printf("Entrez la durée\n");
+        viderBuffer();
+        fgets(tmp, 3, stdin);
+        duree = strtol(tmp,&n,10);
+        printf("dureefont = %d", duree);
+    } while (*n != '\n');
+    return duree;
+}

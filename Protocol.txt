@@ -1,0 +1,27 @@
+On utilise le protocol TCP.
+Tout d'abord on envoie un entier representant le type de requete. 
+Le 1 represente un devis et le 2 demande de retrouver un vehicule.
+
+1) Cas du devis.
+Le client envoie tout d'abord la catégorie du véhicule sous forme d'un charactere
+puis la durée (un entier).
+Ensuite il attend de recevoir dans l'ordre :
+ -le nom du serveur (char[20])
+ -le prix du forfait normal (int)
+ -le prix du retard (int)
+ -la durée du forfait (int)
+Si le nom du serveur vos '\0' cela veut dire qu'il n'y a plus de place.
+
+2) Cas de la recherche de vehicule
+Le client envoie alors l'immatriculation du véhicule sous la forme d'une chaine de charactére.
+Il attend ensuite dans l'ordre ;
+ -la catégorie du véhicule (char)
+ -le nom du serveur (char[20])
+ -le temps actuel de stationnement (int)
+ -le prix du forfait normal (int)
+ -le prix du retard (int)
+ -la durée du forfait (int)
+Si la catégorie vaut -1, alors le véhicule n'est pas dans ce parking.
+
+Tout les entiers sont convertis via htonl pour etre envoyé, puis reconverti
+avec ntohl à la reception.

@@ -1,0 +1,4 @@
+Afin de compiler, il suffit de faire :
+gcc *.c -Wall -o client
+
+Puis lancer l'executable client.

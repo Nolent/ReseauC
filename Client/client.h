@@ -3,12 +3,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
-
-#define PORT 85
 char listServ[][9] = {
     "127.0.0.1",
     };
+
+int listPort[]= {
+    86
+};
 
 
 

@@ -1,7 +1,6 @@
 #include "gestionSocket.h"
 
 int connexion(char ip[9],int port){
-    printf("%s \n",ip);
     int sock;
     if ((sock = socket(AF_INET, SOCK_STREAM, 6)) < 0)
     {
@@ -14,16 +13,9 @@ int connexion(char ip[9],int port){
     serv.sin_port = htons(port);
     serv.sin_addr.s_addr = inet_addr(ip);
 
-    return connect(sock, (struct sockaddr *)&serv, sizeof(struct sockaddr_in));
-}
-
-void handUSR1()
-{
-    exit(0);
-}
-
-void mainProc(int sock, int tube[2]){
-
-    signal(SIGUSR1, handUSR1);
-    
+    int error = connect(sock, (struct sockaddr *)&serv, sizeof(struct sockaddr_in));
+    if(error <0){
+         perror("Erreur connexion");
+         return -1;}
+    else return sock;
 }

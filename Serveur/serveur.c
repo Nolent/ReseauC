@@ -9,7 +9,6 @@ int main(int argc, char *argv[])
         perror("Erreur socket");
         exit(-1);
     }
-    printf("apres sock\n");
     struct sockaddr_in serv, client;
     socklen_t taille = sizeof(struct sockaddr_in);
     serv.sin_family = AF_INET;
@@ -28,16 +27,14 @@ int main(int argc, char *argv[])
         exit(-1);
     }
 
-    printf("avant boucle\n");
-
     do
     {
-        if (accept(sock, (struct sockaddr *)&client, &taille) < 0)
+        int clientSock;
+        if ((clientSock = accept(sock, (struct sockaddr *)&client, &taille)) < 0)
         {
             perror("Erreur accept");
             exit(-1);
         }
-        printf("apres accept\n");
         int pid = fork();
         if (pid < 0)
         {
@@ -46,7 +43,63 @@ int main(int argc, char *argv[])
         }
         else if (pid == 0)
         {
-            printf("enfant Client connecté\n");
+            printf("enfant \n");
+            int type;
+            recv(clientSock,&type, sizeof(type), 0);
+            type = ntohl(type);
+            if(type == 2){
+                char immat[8];
+                recv(clientSock, immat, sizeof(immat),0);
+                printf("immatriculation = %s\n",immat);
+                int indice = findImmat(immat, listVoiture, nbVoiture);
+                if(indice == -1){
+                    int tmp = htonl(indice);
+                    send(clientSock, &tmp, sizeof(tmp), 0);
+                    exit(0);
+                }
+                else{
+                    send(clientSock, &listCate[indice], sizeof(listCate[indice]),0);
+                    send(clientSock, nomServ, sizeof(nomServ), 0);
+                    int tmp = htonl(listTemps[indice]);
+                    send(clientSock,&tmp , sizeof(tmp), 0);
+                    tmp = htonl(prixForfait['a' - listCate[indice]]);
+                    send(clientSock,&tmp , sizeof(tmp), 0);
+                    tmp = htonl(prixForfaitHT['a' - listCate[indice]]);
+                    send(clientSock, &tmp, sizeof(tmp), 0);
+                    tmp = htonl(tempsForfait['a' - listCate[indice]]);
+                    send(clientSock,&tmp , sizeof(tmp), 0);
+
+                    printf("fin enfant\n");
+                    exit(0);
+                }
+            }else{
+                printf("Dans 1\n");
+                int err;
+                int duree;
+                int tmp;
+                char cat;
+                err = recv(clientSock, &cat, sizeof(cat), 0);
+                if(err < 0) perror("erreur recv");
+                err = recv(clientSock, &duree, sizeof(duree), 0);
+                if (err < 0)
+                    perror("erreur recv");
+                duree = ntohl(duree);
+                if (nbVoiture >= VOITMAX || tempsForfait['a' - cat]<duree)
+                {
+                    char message = '\0';
+                    send(clientSock,&message, sizeof(message),0);
+                    exit(0);
+                }else{
+                    send(clientSock,nomServ,sizeof(nomServ),0);
+                    tmp = htonl(prixForfait['a' - cat]);
+                    send(clientSock, &tmp, sizeof(tmp), 0);
+                    tmp = htonl(prixForfaitHT['a' - cat]);
+                    send(clientSock, &tmp, sizeof(tmp), 0);
+                    tmp = htonl(tempsForfait['a' - cat]);
+                    send(clientSock, &tmp, sizeof(tmp), 0);
+                    exit(0);
+                }
+            }
         }
         else
             printf("parent\n");
